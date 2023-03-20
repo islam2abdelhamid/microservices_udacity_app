@@ -1,0 +1,21 @@
+stages:
+  - build
+  # - test
+  # - deploy
+
+# Define job for building the Docker images
+build:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker build -t islam2abdelhamid/udagram-api-feed:v4 ./udagram-api-feed
+    - docker build -t islam2abdelhamid/udagram-api-user:v4 ./udagram-api-user
+    - docker build -t islam2abdelhamid/udagram-frontend:v4 ./udagram-frontend
+    - docker build -t islam2abdelhamid/udagram-reverseproxy:v3 ./udagram-reverseproxy
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    - docker push islam2abdelhamid/udagram-reverseproxy:v3
+    - docker push islam2abdelhamid/udagram-api-feed:v4
+    - docker push islam2abdelhamid/udagram-api-user:v4
+    - docker push islam2abdelhamid/udagram-frontend:v4
